@@ -1,6 +1,7 @@
 package com.donutclient;
 
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.Click;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.text.Text;
 
@@ -53,7 +54,9 @@ public final class DonutClickGui extends Screen {
         c.fill(x + 178, y + 9, x + 210, y + 30, on ? 0xFF176D68 : 0xFF424B60);
         c.drawTextWithShadow(textRenderer, Text.literal(on ? "ON" : "OFF"), x + 185, y + 15, 0xFFFFFFFF);
     }
-    @Override public boolean mouseClicked(double mx, double my, int button) {
+    @Override public boolean mouseClicked(Click click, boolean doubled) {
+        double mx = click.x(), my = click.y();
+        int button = click.button();
         int left = width / 2 - 190, top = height / 2 - 125;
         if (button == 0) {
             for (int i = 0; i < TABS.length; i++) { int y = top + 43 + i * 34; if (mx >= left + 12 && mx <= left + 112 && my >= y && my <= y + 25) { tab = i; return true; } }
@@ -64,7 +67,7 @@ public final class DonutClickGui extends Screen {
             } else if (tab == 1 && mx >= x && mx <= x + 220 && my >= y && my <= y + 40) DonutClient.sprintAssist = !DonutClient.sprintAssist;
             else if (tab == 3 && mx >= x && mx <= x + 180 && my >= y + 20 && my <= y + 48) Waypoints.addCurrent();
         }
-        return super.mouseClicked(mx, my, button);
+        return super.mouseClicked(click, doubled);
     }
     @Override public boolean shouldPause() { return false; }
 }
