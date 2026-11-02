@@ -3,7 +3,7 @@
   "id": "donutclient",
   "version": "${version}",
   "name": "Donut Client",
-  "description": "A polished client-side utility suite with a modular click GUI, coordinates, target HUD, sprint assist, and waypoints.",
+  "description": "Client-side utility suite with coordinates, target HUD, waypoints, and loaded-chunk base/stash candidate scoring for authorized worlds.",
   "authors": ["Donut Client"],
   "license": "MIT",
   "environment": "client",
