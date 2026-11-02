@@ -7,8 +7,9 @@ import net.minecraft.text.Text;
 
 public final class DonutClickGui extends Screen {
     private int tab = 0;
-    private static final String[] TABS = {"HUD", "Movement", "Combat", "Waypoints"};
+    private static final String[] TABS = {"HUD", "Movement", "Combat", "Finders", "Waypoints"};
     public DonutClickGui() { super(Text.literal("Donut Client")); }
+
     @Override public void render(DrawContext c, int mx, int my, float delta) {
         int left = width / 2 - 190, top = height / 2 - 125;
         c.fill(left, top, left + 380, top + 250, 0xF20B1020);
@@ -17,9 +18,9 @@ public final class DonutClickGui extends Screen {
         c.drawTextWithShadow(textRenderer, Text.literal("DONUT CLIENT"), left + 14, top + 12, 0xFF65E6D9);
         c.drawTextWithShadow(textRenderer, Text.literal("RIGHT SHIFT  •  CLOSE"), left + 250, top + 12, 0xFF9BA8C7);
         for (int i = 0; i < TABS.length; i++) {
-            int y = top + 48 + i * 34;
-            c.fill(left + 12, y - 5, left + 112, y + 20, i == tab ? 0xFF283453 : 0xFF131A2B);
-            c.drawTextWithShadow(textRenderer, Text.literal(TABS[i]), left + 22, y + 3, i == tab ? 0xFF65E6D9 : 0xFFD4D9E8);
+            int y = top + 43 + i * 34;
+            c.fill(left + 12, y, left + 112, y + 25, i == tab ? 0xFF283453 : 0xFF131A2B);
+            c.drawTextWithShadow(textRenderer, Text.literal(TABS[i]), left + 22, y + 8, i == tab ? 0xFF65E6D9 : 0xFFD4D9E8);
         }
         int x = left + 132, y = top + 55;
         c.drawTextWithShadow(textRenderer, Text.literal(TABS[tab].toUpperCase()), x, y, 0xFFC5A4FF);
@@ -34,6 +35,33 @@ public final class DonutClickGui extends Screen {
             c.drawTextWithShadow(textRenderer, Text.literal("Combat information only"), x, y, 0xFFFFFFFF);
             c.drawTextWithShadow(textRenderer, Text.literal("Target HUD is available under HUD."), x, y + 22, 0xFF9BA8C7);
             c.drawTextWithShadow(textRenderer, Text.literal("No automated attacks or aim assistance."), x, y + 44, 0xFF9BA8C7);
+        } else if (tab == 3) {
+            c.drawTextWithShadow(textRenderer, Text.literal("Loaded chunks only • authorized worlds"), x, y, 0xFF9BA8C7);
+            c.fill(x, y + 18, x + 205, y + 46, 0xFF283453);
+            c.drawTextWithShadow(textRenderer, Text.literal("SCAN LOADED CHUNKS"), x + 10, y + 28, 0xFF65E6D9);
+            c.drawTextWithShadow(textRenderer, Text.literal("Inspected block entities: " + BaseStashFinder.scannedBlockEntities()), x, y + 54, 0xFFD4D9E8);
+            c.drawTextWithShadow(textRenderer, Text.literal("BASE CANDIDATES"), x, y + 72, 0xFFC5A4FF);
+            int py = y + 88;
+            var bases = BaseStashFinder.bases();
+            if (bases.isEmpty()) {
+                c.drawTextWithShadow(textRenderer, Text.literal("None yet — scan while near loaded builds."), x, py, 0xFF9BA8C7);
+            } else {
+                for (int i = 0; i < Math.min(4, bases.size()); i++) {
+                    c.drawTextWithShadow(textRenderer, Text.literal(bases.get(i).label()), x, py, 0xFFD4D9E8);
+                    py += 15;
+                }
+            }
+            c.drawTextWithShadow(textRenderer, Text.literal("STASH CANDIDATES"), x, y + 158, 0xFFC5A4FF);
+            py = y + 174;
+            var stashes = BaseStashFinder.stashes();
+            if (stashes.isEmpty()) {
+                c.drawTextWithShadow(textRenderer, Text.literal("No storage clusters detected."), x, py, 0xFF9BA8C7);
+            } else {
+                for (int i = 0; i < Math.min(2, stashes.size()); i++) {
+                    c.drawTextWithShadow(textRenderer, Text.literal(stashes.get(i).label()), x, py, 0xFFD4D9E8);
+                    py += 15;
+                }
+            }
         } else {
             c.drawTextWithShadow(textRenderer, Text.literal("Saved waypoints: " + Waypoints.all().size()), x, y, 0xFFFFFFFF);
             c.fill(x, y + 20, x + 180, y + 48, 0xFF283453);
@@ -45,6 +73,7 @@ public final class DonutClickGui extends Screen {
             }
         }
     }
+
     private void row(DrawContext c, int x, int y, String title, boolean on, String desc) {
         c.fill(x, y, x + 220, y + 40, 0xFF151D31);
         c.drawTextWithShadow(textRenderer, Text.literal(title), x + 10, y + 7, 0xFFFFFFFF);
@@ -52,20 +81,30 @@ public final class DonutClickGui extends Screen {
         c.fill(x + 178, y + 9, x + 210, y + 30, on ? 0xFF176D68 : 0xFF424B60);
         c.drawTextWithShadow(textRenderer, Text.literal(on ? "ON" : "OFF"), x + 185, y + 15, 0xFFFFFFFF);
     }
+
     @Override public boolean mouseClicked(Click click, boolean doubled) {
         double mx = click.x(), my = click.y();
         int button = click.button();
         int left = width / 2 - 190, top = height / 2 - 125;
         if (button == 0) {
-            for (int i = 0; i < TABS.length; i++) { int y = top + 43 + i * 34; if (mx >= left + 12 && mx <= left + 112 && my >= y && my <= y + 25) { tab = i; return true; } }
+            for (int i = 0; i < TABS.length; i++) {
+                int y = top + 43 + i * 34;
+                if (mx >= left + 12 && mx <= left + 112 && my >= y && my <= y + 25) { tab = i; return true; }
+            }
             int x = left + 132, y = top + 83;
             if (tab == 0 && mx >= x && mx <= x + 220) {
                 if (my >= y && my <= y + 40) DonutClient.coordsHud = !DonutClient.coordsHud;
                 if (my >= y + 48 && my <= y + 88) DonutClient.pvpInfo = !DonutClient.pvpInfo;
-            } else if (tab == 1 && mx >= x && mx <= x + 220 && my >= y && my <= y + 40) DonutClient.sprintAssist = !DonutClient.sprintAssist;
-            else if (tab == 3 && mx >= x && mx <= x + 180 && my >= y + 20 && my <= y + 48) Waypoints.addCurrent();
+            } else if (tab == 1 && mx >= x && mx <= x + 220 && my >= y && my <= y + 40) {
+                DonutClient.sprintAssist = !DonutClient.sprintAssist;
+            } else if (tab == 3 && mx >= x && mx <= x + 205 && my >= y + 18 && my <= y + 46) {
+                BaseStashFinder.scanLoadedChunks();
+            } else if (tab == 4 && mx >= x && mx <= x + 180 && my >= y + 20 && my <= y + 48) {
+                Waypoints.addCurrent();
+            }
         }
         return super.mouseClicked(click, doubled);
     }
+
     @Override public boolean shouldPause() { return false; }
 }
