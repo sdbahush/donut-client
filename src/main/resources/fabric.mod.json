@@ -1,0 +1,12 @@
+{
+  "schemaVersion": 1,
+  "id": "donutclient",
+  "version": "${version}",
+  "name": "Donut Client",
+  "description": "A polished client-side utility suite with a modular click GUI, coordinates, target HUD, sprint assist, and waypoints.",
+  "authors": ["Donut Client"],
+  "license": "MIT",
+  "environment": "client",
+  "entrypoints": { "client": ["com.donutclient.DonutClient"] },
+  "depends": { "fabricloader": ">=0.18.1", "minecraft": "~1.21.11", "java": ">=21", "fabric-api": "*" }
+}
