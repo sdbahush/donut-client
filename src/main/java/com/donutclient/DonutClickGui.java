@@ -10,7 +10,6 @@ public final class DonutClickGui extends Screen {
     private static final String[] TABS = {"HUD", "Movement", "Combat", "Waypoints"};
     public DonutClickGui() { super(Text.literal("Donut Client")); }
     @Override public void render(DrawContext c, int mx, int my, float delta) {
-        renderBackground(c, mx, my, delta);
         int left = width / 2 - 190, top = height / 2 - 125;
         c.fill(left, top, left + 380, top + 250, 0xF20B1020);
         c.fill(left, top, left + 380, top + 34, 0xFF171E35);
@@ -45,7 +44,6 @@ public final class DonutClickGui extends Screen {
                 c.drawTextWithShadow(textRenderer, Text.literal(p.name() + "  " + p.x() + ", " + p.y() + ", " + p.z()), x, py, 0xFFD4D9E8); py += 17;
             }
         }
-        super.render(c, mx, my, delta);
     }
     private void row(DrawContext c, int x, int y, String title, boolean on, String desc) {
         c.fill(x, y, x + 220, y + 40, 0xFF151D31);
