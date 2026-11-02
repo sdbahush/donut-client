@@ -7,6 +7,7 @@ import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
+import net.minecraft.util.Identifier;
 import net.minecraft.text.Text;
 import org.lwjgl.glfw.GLFW;
 
@@ -15,7 +16,7 @@ public final class DonutClient implements ClientModInitializer {
     public static boolean coordsHud = true, sprintAssist = false, pvpInfo = true;
     @Override public void onInitializeClient() {
         Waypoints.load();
-        openGuiKey = KeyBindingHelper.registerKeyBinding(new KeyBinding("key.donutclient.open_gui", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_RIGHT_SHIFT, "category.donutclient"));
+        openGuiKey = KeyBindingHelper.registerKeyBinding(new KeyBinding("key.donutclient.open_gui", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_RIGHT_SHIFT, KeyBinding.Category.create(Identifier.of("donutclient", "main"))));
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             while (openGuiKey.wasPressed()) client.setScreen(new DonutClickGui());
             if (sprintAssist && client.player != null) client.options.sprintKey.setPressed(true);
